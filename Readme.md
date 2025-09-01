@@ -14,7 +14,8 @@ This project demonstrates interactive UI effects, GPU-friendly CSS 3D transforms
 
 ## 🎥 Demo
 
-*(Insert a GIF or video preview here, e.g. demo.gif)*
+*https://jyotirmoy-baidya.github.io/3D-Cube-Shrink-Effect/*
+*https://res.cloudinary.com/dxbszkdhk/video/upload/v1756707669/3D-Cube_zmq74x.mp4*
 
 ---
 
@@ -34,9 +35,10 @@ This project demonstrates interactive UI effects, GPU-friendly CSS 3D transforms
 
 .
 ├── index.html # Main entry point
+
 ├── style.css # (inline in HTML, but can be externalized)
+
 ├── [README.md](http://readme.md/) # Documentation
-└── demo.gif # (optional preview of animation)
 
 ---
 
@@ -45,7 +47,7 @@ This project demonstrates interactive UI effects, GPU-friendly CSS 3D transforms
 ### 1. Clone the repository
 
 ```bash
-git clone <https://github.com/your-username/3d-cube-grid.git>
+git clone <https://jyotirmoy-baidya.github.io/3D-Cube-Shrink-Effect/>
 cd 3d-cube-grid
 ```
 
@@ -122,5 +124,5 @@ Free to use, modify, and distribute.
 - Built as an experiment to explore **3D transforms + gradient animations** in pure CSS/JS.
 
 ```
-Do you want me to also add a **“Quick Code Snippet”** section (so someone can just copy-paste the working dem
+Do you want me to also add a **“Quick Code Snippet”** section (so someone can just copy-paste the working demo HTML+JS without needing the repo)?
 ```
