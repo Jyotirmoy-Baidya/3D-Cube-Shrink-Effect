@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Cube Grid</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      perspective: 1200px;
+      font-family: sans-serif;
+    }
+
+    .scene {
+      display: grid;
+      grid-template-columns: repeat(10, 45px); /* smaller grid */
+      grid-template-rows: repeat(10, 45px);
+      transform: rotateX(60deg) rotateZ(45deg);
+      transform-style: preserve-3d;
+      gap: 3px;
+    }
+
+    .cube {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      transform-style: preserve-3d;
+      transform-origin: center;
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .cube-face {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: black;
+      border: 1.5px solid rgba(192, 192, 192, 0.3);
+      box-sizing: border-box;
+      transition: background 0.3s ease;
+    }
+
+    .cube-face.bottom, .cube-face.top {
+      height: 60px;
+    }
+
+    .cube-face.left, .cube-face.right {
+      width: 60px;
+    }
+
+    /* Faces */
+    .front  { transform: rotateY(  0deg) translateZ(30px); }
+    .back   { transform: rotateY(180deg) translateZ(30px); }
+    .right  { transform: rotateY( 90deg) translateZ(10px); }
+    .left   { transform: rotateY(-90deg) translateZ(30px); }
+    .top    { transform: rotateX( 90deg) translateZ(30px); }
+    .bottom { transform: rotateX(-90deg) translateZ(10px); }
+
+    .label {
+      position: absolute;
+      top: 20px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 0 0 10px #00f;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" id="scene"></div>
+  <div class="label" id="label">0 Nodes Shrunk</div>
+
+  <script>
+    const scene = document.getElementById("scene");
+    const label = document.getElementById("label");
+    const gridSize = 10; // smaller grid
+    const cubes = [];
+    let activeCount = 0;
+    const effectRadius = 120; // reduced radius
+    const effectRadiusColor = 80;
+
+    // Gradient stops (white → indigo shades → black)
+    const colors = [
+      [255, 255, 255],   // white
+      [197, 210, 255],   // light indigo
+      [129, 140, 248],   // indigo
+      [79, 70, 229],     // dark indigo
+      [0, 0, 0]          // black
+    ];
+
+    function interpolateColor(distanceRatio) {
+      const scaled = distanceRatio * (colors.length - 1);
+      const index = Math.floor(scaled);
+      const t = scaled - index;
+
+      const c1 = colors[index];
+      const c2 = colors[Math.min(index + 1, colors.length - 1)];
+
+      const r = Math.round(c1[0] + (c2[0] - c1[0]) * t);
+      const g = Math.round(c1[1] + (c2[1] - c1[1]) * t);
+      const b = Math.round(c1[2] + (c2[2] - c1[2]) * t);
+
+      return `rgb(${r},${g},${b})`;
+    }
+
+    // Create cubes
+    for (let i = 0; i < gridSize * gridSize; i++) {
+      const cube = document.createElement("div");
+      cube.classList.add("cube");
+
+      ["front", "back", "right", "left", "top", "bottom"].forEach((face) => {
+        const div = document.createElement("div");
+        div.classList.add("cube-face", face);
+        cube.appendChild(div);
+      });
+
+      scene.appendChild(cube);
+      cubes.push(cube);
+    }
+
+    function updateLabel() {
+      label.innerText = `${activeCount*6} Nodes Shrunk`;
+    }
+
+    function animateCubes(mouseX, mouseY) {
+      activeCount = 0;
+
+      cubes.forEach((cube) => {
+        const rect = cube.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        const dx = mouseX - cx;
+        const dy = mouseY - cy;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        const faces = cube.querySelectorAll(".cube-face");
+
+        if (distance < effectRadius) {
+          // shrink
+          const shrink = Math.max(0.4, distance / effectRadius);
+          cube.style.transform = `scaleZ(${shrink})`;
+
+          // color based on distance ratio
+          const ratio = distance / effectRadius;
+          const color = interpolateColor(ratio);
+
+          faces.forEach(face => face.style.background = color);
+
+          if (shrink < 0.9) activeCount++;
+        } else {
+          // reset
+          cube.style.transform = `scaleZ(1)`;
+          faces.forEach(face => face.style.background = "black");
+        }
+      });
+
+      updateLabel();
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      requestAnimationFrame(() => {
+        animateCubes(e.clientX, e.clientY);
+      });
+    });
+
+    // Initial state
+    animateCubes(window.innerWidth / 2, window.innerHeight / 2);
+  </script>
+</body>
+</html>
